@@ -8,7 +8,7 @@
 // main.cpp
 
 #include <iostream>
-
+#include <SFML/Graphics.hpp>
 #include <lua5.2/lauxlib.h>
 #include <lua5.2/lua.hpp>
 #include <lua5.2/lualib.h>
@@ -18,14 +18,6 @@ using namespace std;
 using namespace luabridge;
 
 int gamestate;
-
-struct Player
-{
-};
-
-void addItem()
-{
-}
 
 void loop()
 {
@@ -57,7 +49,34 @@ void loop()
 
 int main()
 {
-    gamestate = 1;
-    loop();
+    sf::RenderWindow window(sf::VideoMode(800, 800), "C-Lu");
+    sf::View worldView(sf::Vector2f(0, 0), sf::Vector2f(200, 200));
+    window.setView(worldView);
+    sf::Texture ghost;
+    if(!ghost.loadFromFile("./images/Ghost.png")){
+        cout << "NOOOOO!";
+    }
+
+    sf::Sprite ghostS;
+    ghostS.setTexture(ghost);
+    ghostS.setPosition(-8,-8);
+    ghostS.setScale(0.5f, 0.5f);
+    
+    while(window.isOpen()){
+        sf::Event event;
+        while(window.pollEvent(event)){
+            if(event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        window.clear();
+        window.draw(ghostS);
+        window.display();
+
+    }
+
+
+    //gamestate = 1;
+    //loop();
     return 0;
 }

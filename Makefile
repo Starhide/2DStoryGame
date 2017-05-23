@@ -1,11 +1,11 @@
 CC = g++
 includes = include
-args = -I $(includes) -std=c++0x -llua5.2 -ldl -Wall
+args = -I $(includes) -std=c++0x -llua5.2 -ldl -Wall -lsfml-graphics -lsfml-window -lsfml-system
 objdir = obj
 source = src
 build = build
 
-_objects = main.o LuaAdapter/lua_adapter.o
+_objects = main.o LuaAdapter/lua_adapter.o Entity/Entity.o 
 objects = $(patsubst %, $(objdir)/%, $(_objects))
 #sources = $(patsubst %, $(source)/%, $(_objects))
 #headers := $(wildcard $(include)/*.h)
