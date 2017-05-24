@@ -3,10 +3,11 @@
 #include <map>
 #include <string>
 #include <typeindex>
+#include <SFML/Graphics/Transformable.hpp>
 
 class Component;
 
-class Entity {
+class Entity : public sf::Transformable{
     private:
         std::string type;
         std::map<std::type_index, Component*> components;

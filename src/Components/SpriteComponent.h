@@ -1,21 +1,31 @@
 #pragma once
 
 #include <string>
+#include <iostream>
 #include "../Entity/Component.h"
+
+namespace sf{
+    class Sprite;
+    class Color;
+    class RenderedWindow;
+};
+
+class Entity;
 
 class SpriteComponent : public Component{
     private:
-        std::string filename;
-        
+        sf::Sprite sprite;
 
     public:
-        SpriteComponent(){};
+        SpriteComponent(Entity* parent, luabridge::LuaRef& componentTable);
 
-        void setFilename(const std::string& filename){
-            this->filename = filename;
+        sf::Sprite& getSprite(){
+            return sprite;
         }
 
-        std::string getFilename() const{
-            return filename;
+        void setSprite(const sf::Sprite& sprit){
+            this->sprite = sprit;
         }
+
+        void draw(sf::RenderWindow& win);
 };

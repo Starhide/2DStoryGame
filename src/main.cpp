@@ -14,37 +14,35 @@
 #include <lua5.2/lualib.h>
 #include <LuaBridge.h>
 
+#include "Lua/LuaHelper.h"
+#include "Entity/Entity.h"
+#include "Components/SpriteComponent.h"
+
 using namespace std;
 using namespace luabridge;
+using namespace luah;
 
 int gamestate;
 
-void loop()
-{
-    lua_State *L = luaL_newstate();
-    luaL_dofile(L, "lua/commands.lua");
-    luaL_openlibs(L);
-    lua_pcall(L, 0, 0, 0);
-    LuaRef command = getGlobal(L, "call");
+template <typename T>
+void addComponent(Entity* e, luabridge::LuaRef& componentTable) {
+    e->addComponent(std::type_index(typeid(T)), new T(e, componentTable));
+}
 
-    while (gamestate > 0)
-    {
-        string input;
-        getline(cin, input);
-        if (input.find("exit") != string::npos)
-        {
-            gamestate = 0;
+Entity* loadEntity(lua_State* L, const std::string& type) {
+    auto e = new Entity();
+    e->setType(type);
+    auto v = luah::getTableKeys(L, type);
+    LuaRef entityTable = getGlobal(L, type.c_str());
+    for (auto& componentName : v) {
+        if (componentName == "SpriteComponent") {
+            LuaRef valueTable = entityTable[componentName];
+            addComponent<SpriteComponent>(e, valueTable);
         }
-        else if (input.find("reload") != string::npos)
-        {
-            luaL_dofile(L, "lua/commands.lua");
-        }
-        else
-        {
-            double result{0};
-            command(input);
-        }
+ 
+        std::cout << "Added " << componentName << " to " << type << std::endl;
     }
+    return e;
 }
 
 int main()
@@ -52,16 +50,16 @@ int main()
     sf::RenderWindow window(sf::VideoMode(800, 800), "C-Lu");
     sf::View worldView(sf::Vector2f(0, 0), sf::Vector2f(200, 200));
     window.setView(worldView);
-    sf::Texture ghost;
-    if(!ghost.loadFromFile("./images/Ghost.png")){
-        cout << "NOOOOO!";
-    }
 
-    sf::Sprite ghostS;
-    ghostS.setTexture(ghost);
-    ghostS.setPosition(-8,-8);
-    ghostS.setScale(0.5f, 0.5f);
-    
+    lua_State* L = luaL_newstate();
+    luaL_openlibs(L);
+
+    luah::loadScript(L, "lua/ghost.lua");
+    luah::loadGetKeysFunction(L);
+
+    auto e = loadEntity(L, "ghost"); //Seg fault
+    auto spc = e->get<SpriteComponent>();
+
     while(window.isOpen()){
         sf::Event event;
         while(window.pollEvent(event)){
@@ -70,13 +68,10 @@ int main()
         }
 
         window.clear();
-        window.draw(ghostS);
+        spc->draw(window);
         window.display();
-
     }
-
-
-    //gamestate = 1;
-    //loop();
+    
+    lua_close(L);
     return 0;
 }
