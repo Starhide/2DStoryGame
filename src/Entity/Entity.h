@@ -14,6 +14,7 @@ class Entity : public sf::Transformable{
 
     public:
         ~Entity();
+
         void addComponent(std::type_index type, Component* c);
 
         template <typename T>

@@ -25,7 +25,7 @@ void luah::lua_gettostack(lua_State* L, const std::string& variableName){
                 return;
             } else {
                 var = "";
-                level++;
+                ++level;
             }
         } else {
             var += variableName.at(i);
@@ -48,7 +48,7 @@ void luah::loadGetKeysFunction(lua_State* L){
     std::string code = R"(
         function getKeys(t)
             s={}
-            for k, v in pairts(t) do
+            for k, v in pairs(t) do
                 table.insert(s,k)
             end
             return s

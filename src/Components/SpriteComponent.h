@@ -17,15 +17,15 @@ class SpriteComponent : public Component{
         sf::Sprite sprite;
 
     public:
-        SpriteComponent(Entity* parent, luabridge::LuaRef& componentTable);
+        SpriteComponent(luabridge::LuaRef& componentTable);
 
-        sf::Sprite& getSprite(){
-            return sprite;
+        sf::Sprite* getSprite(){
+            return &sprite;
         }
 
         void setSprite(const sf::Sprite& sprit){
             this->sprite = sprit;
         }
 
-        void draw(sf::RenderWindow& win);
+        void draw(Entity* e, sf::RenderWindow& win);
 };

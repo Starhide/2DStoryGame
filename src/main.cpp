@@ -5,8 +5,6 @@
  *      Author: blake
  */
 
-// main.cpp
-
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <lua5.2/lauxlib.h>
@@ -14,29 +12,27 @@
 #include <lua5.2/lualib.h>
 #include <LuaBridge.h>
 
+#include "TextureController.h"
 #include "Lua/LuaHelper.h"
 #include "Entity/Entity.h"
 #include "Components/SpriteComponent.h"
 
-using namespace std;
-using namespace luabridge;
-using namespace luah;
-
-int gamestate;
+std::map<std::string, sf::Texture> textures::loadedTextures;
 
 template <typename T>
 void addComponent(Entity* e, luabridge::LuaRef& componentTable) {
-    e->addComponent(std::type_index(typeid(T)), new T(e, componentTable));
+    e->addComponent(std::type_index(typeid(T)), new T(componentTable));
 }
 
 Entity* loadEntity(lua_State* L, const std::string& type) {
+    using namespace luabridge;
     auto e = new Entity();
     e->setType(type);
     auto v = luah::getTableKeys(L, type);
     LuaRef entityTable = getGlobal(L, type.c_str());
     for (auto& componentName : v) {
         if (componentName == "SpriteComponent") {
-            LuaRef valueTable = entityTable[componentName];
+            LuaRef valueTable = entityTable["SpriteComponent"];
             addComponent<SpriteComponent>(e, valueTable);
         }
  
@@ -47,6 +43,8 @@ Entity* loadEntity(lua_State* L, const std::string& type) {
 
 int main()
 {
+    //loadedTextures = std::map<std::string, sf::Texture*>();
+    using namespace luabridge;
     sf::RenderWindow window(sf::VideoMode(800, 800), "C-Lu");
     sf::View worldView(sf::Vector2f(0, 0), sf::Vector2f(200, 200));
     window.setView(worldView);
@@ -57,7 +55,7 @@ int main()
     luah::loadScript(L, "lua/ghost.lua");
     luah::loadGetKeysFunction(L);
 
-    auto e = loadEntity(L, "ghost"); //Seg fault
+    auto e = loadEntity(L, "ghost");
     auto spc = e->get<SpriteComponent>();
 
     while(window.isOpen()){
@@ -68,7 +66,9 @@ int main()
         }
 
         window.clear();
-        spc->draw(window);
+
+        spc->draw(e,window);
+
         window.display();
     }
     

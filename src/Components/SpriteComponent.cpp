@@ -7,26 +7,25 @@
 
 #include "SpriteComponent.h"
 #include "../Entity/Entity.h"
+#include "../TextureController.h"
 
-SpriteComponent::SpriteComponent(Entity* parent, luabridge::LuaRef& componentTable): Component(parent){
+SpriteComponent::SpriteComponent(luabridge::LuaRef& componentTable){
     using namespace luabridge;
-    auto filenameRef = componentTable["filename"];
+    this->sprite = sf::Sprite();
+
+    LuaRef filenameRef = componentTable["filename"];
     if(filenameRef.isString()){
         std::string file = filenameRef.cast<std::string>();
-        sf::Texture texture;
-        if(texture.loadFromFile(file.c_str())){
-            sprite = sf::Sprite(texture);
-        } else {
-            std::cout << "Could not load " << file << " in SpriteComponent of entity " << parent->getType();
-        }
+        sf::Texture* text = textures::loadTexture(file);
+        this->sprite.setTexture(*text);
     } else {
-        std::cout << "filename is not a string in SpriteComponent of entity " << parent->getType();
+        std::cout << "filename is not a string in SpriteComponent." << std::endl;
     }
 }
 
-void SpriteComponent::draw(sf::RenderWindow& win){
-            sprite.setPosition(parent->getPosition());
-            sprite.setRotation(parent->getRotation());
-            sprite.setScale(parent->getScale());
-           win.draw(sprite);
+void SpriteComponent::draw(Entity *e, sf::RenderWindow& win){
+       sprite.setPosition(e->getPosition());
+       sprite.setRotation(e->getRotation());
+       sprite.setScale(e->getScale());
+       win.draw(sprite);
 }
