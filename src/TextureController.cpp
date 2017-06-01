@@ -10,7 +10,8 @@ sf::Texture* textures::loadTexture(std::string filename){
     sf::Texture newTexture;
 
     if(!newTexture.loadFromFile(filename.c_str())){
-        std::cout << "Could not load " << filename << std::endl;
+        std::cout << "@! Could not load " << filename << std::endl;
+        return nullptr;
     }
 
     loadedTextures[filename] = newTexture;

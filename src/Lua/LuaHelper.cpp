@@ -1,7 +1,4 @@
 #include <iostream>
-#include <lua5.2/lauxlib.h>
-#include <lua5.2/lua.hpp>
-#include <lua5.2/lualib.h>
 
 #include "LuaHelper.h"
 
@@ -78,5 +75,24 @@ std::vector<std::string> luah::getTableKeys(lua_State* L, const std::string& nam
     }
 
     lua_settop(L, 0);
+    return keys;
+}
+
+//Not working
+std::vector<std::string> luah::getTableKeys(luabridge::LuaRef &table){
+    lua_State* L = table.state();
+
+    std::vector<std::string> keys;
+
+    table.push(L);
+    push(L, luabridge::Nil());
+    while (lua_next(L, -2)) {
+        luabridge::LuaRef key = luabridge::LuaRef::fromStack(L, -2);
+        luabridge::LuaRef val = luabridge::LuaRef::fromStack(L, -1);
+        if(key.isString()){
+            keys.push_back(key.cast<std::string>());
+        }
+        lua_pop(L, 1);
+    }
     return keys;
 }

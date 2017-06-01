@@ -3,7 +3,7 @@
 #include <iostream>
 
 namespace luabridge{
-    class luaRef;
+    class LuaRef;
 }
 
 class Entity;
