@@ -1,8 +1,8 @@
 ghost = {
-    SpriteComponent = {
+    Sprite = {
         filename = "./images/Ghost.png"
     },
-    InputComponent = {
+    Input = {
         key_forward = function()
             print("Hi")
         end,

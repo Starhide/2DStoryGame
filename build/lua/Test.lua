@@ -1,2 +1,37 @@
-testString = "LuaBridge works!"
-number = 42
+entities = {
+{
+	id = "Player1",
+	posX = 0,
+	posY = 0,
+	typename = "ghost",
+	typefile = "lua/ghost.lua",
+	components = {
+	}
+},
+
+{
+	id = "Enemy1",
+	posX = 0,
+	posY = 0,
+	typename = "ghost",
+	typefile = "lua/ghost.lua",
+	components = {
+		Sprite = {
+			filename = ""
+		}
+	}
+},
+
+{
+	id = "Enemy2",
+	posX = 0,
+	posY = 0,
+	typename = "ghost",
+	typefile = "lua/ghost.lua",
+	components = {
+		Sprite = {
+			filename = ""
+		}
+	}
+}
+}

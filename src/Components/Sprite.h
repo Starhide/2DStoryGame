@@ -13,16 +13,18 @@ class RenderedWindow;
 
 class Entity;
 
-class SpriteComponent : public Component {
+class Sprite : public Component {
   private:
     sf::Sprite sprite;
 
   public:
-    SpriteComponent(luabridge::LuaRef &componentTable);
+    Sprite(luabridge::LuaRef &componentTable);
 
     sf::Sprite *getSprite() { return &sprite; }
 
     void setSprite(const sf::Sprite &sprit) { this->sprite = sprit; }
 
     void draw(Entity *e, sf::RenderWindow &win);
+
+    void setAttributes(luabridge::LuaRef &table);
 };

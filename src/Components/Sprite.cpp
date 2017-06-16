@@ -5,9 +5,9 @@
 
 #include "../Entity/Entity.h"
 #include "../TextureController.h"
-#include "SpriteComponent.h"
+#include "Sprite.h"
 
-SpriteComponent::SpriteComponent(luabridge::LuaRef &componentTable) {
+Sprite::Sprite(luabridge::LuaRef &componentTable) {
     using namespace luabridge;
     this->sprite = sf::Sprite();
 
@@ -18,18 +18,22 @@ SpriteComponent::SpriteComponent(luabridge::LuaRef &componentTable) {
         if (!(text == nullptr)) {
             this->sprite.setTexture(*text);
         } else {
-            std::cout << "@! " << file << " failed to load in SpriteComponent."
+            std::cout << "@! " << file << " failed to load in Sprite Component."
                       << std::endl;
         }
     } else {
-        std::cout << "@! Filename is not a string in SpriteComponent."
+        std::cout << "@! Filename is not a string in Sprite Component."
                   << std::endl;
     }
 }
 
-void SpriteComponent::draw(Entity *e, sf::RenderWindow &win) {
+void Sprite::draw(Entity *e, sf::RenderWindow &win) {
     sprite.setPosition(e->getPosition());
     sprite.setRotation(e->getRotation());
     sprite.setScale(e->getScale());
     win.draw(sprite);
+}
+
+void Sprite::setAttributes(luabridge::LuaRef &table){
+    
 }

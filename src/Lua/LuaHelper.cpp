@@ -78,21 +78,29 @@ std::vector<std::string> luah::getTableKeys(lua_State* L, const std::string& nam
     return keys;
 }
 
-//Not working
 std::vector<std::string> luah::getTableKeys(luabridge::LuaRef &table){
     lua_State* L = table.state();
 
-    std::vector<std::string> keys;
+    lua_getglobal(L, "getKeys");
+    if (lua_isnil(L, -1)) {
+        std::cout << "Get keys function is not loaded. Loading..." << std::endl;
+        loadGetKeysFunction(L);
+        lua_getglobal(L, "getKeys");
+    }
 
     table.push(L);
-    push(L, luabridge::Nil());
+    lua_pcall(L, 1, 1, 0);
+    lua_pushnil(L);
+
+    std::vector<std::string> keys;
+
     while (lua_next(L, -2)) {
-        luabridge::LuaRef key = luabridge::LuaRef::fromStack(L, -2);
-        luabridge::LuaRef val = luabridge::LuaRef::fromStack(L, -1);
-        if(key.isString()){
-            keys.push_back(key.cast<std::string>());
+        if(lua_type(L, -1) == LUA_TSTRING){
+            keys.push_back(lua_tostring(L, -1));
         }
         lua_pop(L, 1);
     }
+
+    lua_settop(L, 0);
     return keys;
 }

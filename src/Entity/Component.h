@@ -11,4 +11,6 @@ class Entity;
 class Component {
     public:
         virtual ~Component() {};
+
+        virtual void setAttributes(luabridge::LuaRef &table) = 0;
 };

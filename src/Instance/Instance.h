@@ -7,14 +7,13 @@
 
 class Component;
 
-class Entity : public sf::Transformable{
+class Instance : public sf::Transformable{
     private:
-        std::string id;
-        std::string type;
+        Entity* type;
         std::map<std::type_index, Component*> components;
 
     public:
-        ~Entity();
+        ~Instance();
 
         void addComponent(std::type_index type, Component* c);
 
@@ -27,16 +26,8 @@ class Entity : public sf::Transformable{
             return nullptr;
         }
 
-        void setID(const std::string& id){
-            this->id = id;
-        }
-
         void setType(const std::string& type){
             this->type = type;
-        }
-
-        std::string getID() const{
-            return id;
         }
 
         std::string getType() const{
