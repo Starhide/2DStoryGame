@@ -7,17 +7,12 @@
 
 class Input : public Component {
   private:
-    std::map<std::string, luabridge::LuaRef *> functions;
+    std::map<std::string, sol::function *> functions;
 
   public:
-    Input(luabridge::LuaRef &componentTable);
+    Input(sol::table &componentTable);
     
-    luabridge::LuaRef *getFunction(const std::string &key);
+    sol::function *getFunction(const std::string &key);
 
-    void setAttributes(luabridge::LuaRef &table);
-
-    // luabridge::LuaRef getFunction(const std::string &key) { return
-    // &functions[key]; }
-
-    // void setFunction(const std::string &key, const luabridge::LuaRef &funct);
+    void setAttributes(sol::table &table);
 };

@@ -18,7 +18,7 @@ class Sprite : public Component {
     sf::Sprite sprite;
 
   public:
-    Sprite(luabridge::LuaRef &componentTable);
+    Sprite(sol::table &componentTable);
 
     sf::Sprite *getSprite() { return &sprite; }
 
@@ -26,5 +26,5 @@ class Sprite : public Component {
 
     void draw(Entity *e, sf::RenderWindow &win);
 
-    void setAttributes(luabridge::LuaRef &table);
+    void setAttributes(sol::table &table);
 };

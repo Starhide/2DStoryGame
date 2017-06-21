@@ -8,7 +8,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-#include "Lua/LuaHelper.h"
+#include <sol.hpp>
 
 #include "Components/Input.h"
 #include "Components/Sprite.h"
@@ -22,31 +22,26 @@ sf::Time globals::delta;
 std::vector<Input *> globals::inputlisteners;
 
 int main() {
-    using namespace luabridge;
     using namespace el;
-
+ 
     sf::RenderWindow window(sf::VideoMode(800, 800), "C-Lu");
     sf::View worldView(sf::Vector2f(0, 0), sf::Vector2f(200, 200));
     window.setView(worldView);
 
-    lua_State *L = luaL_newstate();
-    luaL_openlibs(L);
-    luah::loadGetKeysFunction(L);  
-    
-    luah::loadScript(L, "lua/Test.lua");
-    LuaRef entities = getGlobal(L, "entities");
+    sol::state lua;
+
+    lua.script_file("lua/Test.lua");
+    sol::table entities = lua["entities"];
     std::vector<Entity*> enits;
     Entity* e;
 
-    auto it = Iterator(entities);
-    while(!it.isNil()){
-        LuaRef table = it.value();
-        auto nw = createEntity(L, table);
+    for(auto &kvp : entities){
+        sol::table initTable = kvp.second;
+        auto nw = createEntity(lua, initTable);
         enits.push_back(nw);
         if(nw->getID() == "Player1"){
             e = nw;
         }
-        ++it;
     }
 
     sf::Clock deltaClock;
@@ -92,6 +87,5 @@ int main() {
         window.display();
     }
 
-    lua_close(L);
     return 0;
 }

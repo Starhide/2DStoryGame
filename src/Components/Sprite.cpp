@@ -1,19 +1,16 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-#include "../Lua/LuaHelper.h"
-
 #include "../Entity/Entity.h"
 #include "../TextureController.h"
 #include "Sprite.h"
 
-Sprite::Sprite(luabridge::LuaRef &componentTable) {
-    using namespace luabridge;
+Sprite::Sprite(sol::table &componentTable) {
     this->sprite = sf::Sprite();
 
-    LuaRef filenameRef = componentTable["filename"];
-    if (filenameRef.isString()) {
-        std::string file = filenameRef.cast<std::string>();
+    sol::object filenameRef = componentTable["filename"];
+    if (filenameRef.valid()) {
+        std::string file = filenameRef.as<std::string>();
         sf::Texture *text = textures::loadTexture(file);
         if (!(text == nullptr)) {
             this->sprite.setTexture(*text);
@@ -34,6 +31,6 @@ void Sprite::draw(Entity *e, sf::RenderWindow &win) {
     win.draw(sprite);
 }
 
-void Sprite::setAttributes(luabridge::LuaRef &table){
+void Sprite::setAttributes(sol::table &table){
     
 }

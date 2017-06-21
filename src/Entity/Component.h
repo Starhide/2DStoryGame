@@ -1,10 +1,7 @@
 #pragma once
 
 #include <iostream>
-
-namespace luabridge{
-    class LuaRef;
-}
+#include <sol.hpp>
 
 class Entity;
 
@@ -12,5 +9,5 @@ class Component {
     public:
         virtual ~Component() {};
 
-        virtual void setAttributes(luabridge::LuaRef &table) = 0;
+        virtual void setAttributes(sol::table &table) = 0;
 };
