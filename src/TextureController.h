@@ -8,7 +8,7 @@
 namespace textures {
 extern std::map<std::string, sf::Texture> loadedTextures;
 
-sf::Texture *loadTexture(std::string filename) {
+static sf::Texture *loadTexture(std::string filename) {
     if (loadedTextures.count(filename)) {
         return &loadedTextures[filename];
     }

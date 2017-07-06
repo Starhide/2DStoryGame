@@ -16,7 +16,7 @@ entities = {
 	typename = "ghost",
 	typefile = "lua/ghost.lua",
 	components = {
-		Sprite = {
+		Graphics = {
 			filename = ""
 		}
 	}
@@ -29,7 +29,7 @@ entities = {
 	typename = "ghost",
 	typefile = "lua/ghost.lua",
 	components = {
-		Sprite = {
+		Graphics = {
 			filename = ""
 		}
 	}

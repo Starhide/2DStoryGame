@@ -2,8 +2,7 @@
 
 namespace el {
 
-template <typename T>
-void addComponent(Entity *e, sol::table &componentTable) {
+template <typename T> void addComponent(Entity *e, sol::table &componentTable) {
     e->addComponent(std::type_index(typeid(T)), new T(componentTable));
 }
 
@@ -17,12 +16,11 @@ Entity *loadEntity(sol::state &lua, const std::string &type,
     std::string key;
     sol::table tabs = lua[type];
 
-    for (auto& kvp : tabs) {
+    for (auto &kvp : tabs) {
         key = kvp.first.as<std::string>();
-        if (key == "Sprite") {
-            sol::table valueTable = lua[type]["Sprite"];
-            addComponent<Sprite>(e, valueTable);
-
+        if (key == "Graphics") {
+            sol::table valueTable = lua[type]["Graphics"];
+            addComponent<Graphics>(e, valueTable);
         } else if (key == "Input") {
             sol::table valueTable = lua[type]["Input"];
             addComponent<Input>(e, valueTable);
@@ -36,8 +34,7 @@ Entity *loadEntity(sol::state &lua, const std::string &type,
 
 Entity *createEntity(sol::state &lua, sol::table &initTable) {
     std::string id = initTable["id"];
-    sf::Vector2f position =
-        sf::Vector2f(initTable["posX"], initTable["posY"]);
+    sf::Vector2f position = sf::Vector2f(initTable["posX"], initTable["posY"]);
     std::string type = initTable["typename"];
     std::string typefile = initTable["typefile"];
 
@@ -48,11 +45,11 @@ Entity *createEntity(sol::state &lua, sol::table &initTable) {
     newEntity->setPosition(position);
 
     std::string key;
-    for (auto& kvp : components) {
+    for (auto &kvp : components) {
         key = kvp.first.as<std::string>();
-        if (key == "Sprite") {
-            sol::table valueTable = lua[type]["Sprite"];
-           newEntity->get<Sprite>()->setAttributes(valueTable);
+        if (key == "Graphics") {
+            sol::table valueTable = lua[type]["Graphics"];
+            newEntity->get<Graphics>()->setAttributes(valueTable);
 
         } else if (key == "Input") {
             sol::table valueTable = lua[type]["Input"];

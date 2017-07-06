@@ -9,12 +9,13 @@
 #include <iostream>
 
 #include <sol.hpp>
-
+ 
+#include "TextureController.h" 
 #include "Components/Input.h"
-#include "Components/Sprite.h"
+#include "Components/Graphics.h"
 #include "Entity/Entity.h"
 #include "Globals.h"
-#include "TextureController.h"
+
 #include "Entity/EntityLoader.h"
 
 std::map<std::string, sf::Texture> textures::loadedTextures;
@@ -45,6 +46,7 @@ int main() {
     }
 
     sf::Clock deltaClock;
+    sf::Clock fixedClock;
 
     while (window.isOpen()) {
         sf::Event event;
@@ -82,9 +84,14 @@ int main() {
 
         window.clear();
 
-        e->get<Sprite>()->draw(e, window);
+        e->get<Graphics>()->drawUpdate(e, window);
 
         window.display();
+
+        if(fixedClock.getElapsedTime().asSeconds() > 0.05f){
+            e->get<Graphics>()->fixedUpdate(e);
+            fixedClock.restart();
+        }
     }
 
     return 0;
