@@ -2,12 +2,12 @@ ghost = {
     Graphics = {
         filename = "./images/ghostSheet.png",
         sequences = {
-            idle = {0, 0, 1},
-            angry = {1, 0, 1}
+            idle = {0, 1},
+            angry = {2, 3}
         },
-        size = 32,
-        rate = 0.05,
-        startSequence = "idle";
+        scale = 2,
+        rate = 0.1,
+        startSequence = "angry";
         startIndex = 0;
         isRunning = true;
     },

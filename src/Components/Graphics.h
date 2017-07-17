@@ -2,10 +2,11 @@
 
 #include "../Entity/Component.h"
 #include "../Entity/Entity.h"
-#include "../TextureController.h" 
+#include "../TextureController.h"
 
 #include <iostream>
 #include <string>
+#include <cmath>
 
 namespace sf {
 class Sprite;
@@ -13,21 +14,24 @@ class Color;
 class RenderedWindow;
 };
 
-struct Animation{
-    int row;
-    std::vector<int> sequence;
-};
-
 class Graphics : public Component {
   private:
     sf::Clock timer;
     sf::Sprite sprite;
-    std::map<std::string, Animation> sequences;
+    std::map<std::string, std::vector<int>> sequences;
+    int scale;
     int size;
     float rate;
     std::string sequence;
-    int index;
+    unsigned int index;
     bool isRunning;
+
+    inline void setTextureRect() {
+        sprite.setTextureRect(
+            sf::IntRect((sequences[sequence][index] % scale) * size,
+                        (floor(sequences[sequence][index] / scale)) * size,
+                        size, size));
+    }
 
   public:
     Graphics(sol::table &componentTable);
@@ -47,4 +51,3 @@ class Graphics : public Component {
 
     void setCurrent(std::string seq, int index);
 };
-

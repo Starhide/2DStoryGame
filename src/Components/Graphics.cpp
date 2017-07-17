@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 
-#include "Graphics.h" 
- 
+#include "Graphics.h"
+
 Graphics::Graphics(sol::table &componentTable) {
     this->sprite = sf::Sprite();
 
@@ -20,31 +20,41 @@ Graphics::Graphics(sol::table &componentTable) {
                   << std::endl;
     }
 
-    sol::table sequencesT = componentTable["sequences"];
+    bool setup = componentTable["no_animation"].get_or(false);
 
-    for (auto &kvp : sequencesT) {
-        std::string key = kvp.first.as<std::string>();
-        sol::table value = kvp.second;
-        int row = value[1];
-        std::vector<int> seq;
+    if (setup) {
+        sequences["idle"] = std::vector<int> {0};
+        sequence = "idle";
+        scale = 1;
+        size = sprite.getTexture()->getSize().x / scale;
+        rate = 0;
+        isRunning = false;
         
-        for (unsigned int i = 2; i <= value.size(); i++) {
-            seq.push_back(value[i]);
+    } else {
+        sol::table sequencesT = componentTable["sequences"];
+
+        for (auto &kvp : sequencesT) {
+            std::string key = kvp.first.as<std::string>();
+            sol::table value = kvp.second;
+            std::vector<int> seq;
+
+            for (unsigned int i = 1; i <= value.size(); i++) {
+                seq.push_back(value[i]);
+            }
+
+            sequences[key] = seq;
         }
 
-        Animation temp;
-        temp.row = row;
-        temp.sequence = seq;
-        sequences[key] = temp;
+        scale = componentTable["scale"];
+        size = sprite.getTexture()->getSize().x / scale;
+
+        rate = componentTable["rate"].get_or(0.0f);
+        sequence = componentTable["startSequence"];
+        index = componentTable["startIndex"].get_or(0);
+        isRunning = componentTable["isRunning"].get_or(false);
     }
 
-    size = componentTable["size"];
-    rate = componentTable["rate"];
-    setAttributes(componentTable);
-
-    Animation curr = sequences[sequence];
-    sprite.setTextureRect(
-        sf::IntRect(curr.sequence[index] * size, curr.row * size, size, size));
+    setTextureRect();
 }
 
 void Graphics::setAttributes(sol::table &table) {
@@ -71,27 +81,22 @@ void Graphics::fixedUpdate(Entity *e) {
     if (isRunning) {
         if (timer.getElapsedTime().asSeconds() > rate) {
             index++;
-            Animation curr = sequences[sequence];
 
-            if(index >= curr.sequence.size()){
+            if (index >= sequences[sequence].size()) {
                 index = 0;
             }
 
-            sprite.setTextureRect(sf::IntRect(curr.sequence[index] * size,
-                                              curr.row * size, size, size));
+            setTextureRect();
 
             timer.restart();
         }
     }
-   
 }
 
 void Graphics::stop() {
     isRunning = false;
     index = 0;
-    Animation curr = sequences[sequence];
-    sprite.setTextureRect(
-        sf::IntRect(curr.sequence[index] * size, curr.row * size, size, size));
+    setTextureRect();
 }
 
 void Graphics::run(std::string seq) {
@@ -102,7 +107,5 @@ void Graphics::run(std::string seq) {
 void Graphics::setCurrent(std::string seq, int index) {
     this->sequence = seq;
     this->index = index;
-    Animation curr = sequences[sequence];
-    sprite.setTextureRect(
-        sf::IntRect(curr.sequence[index] * size, curr.row * size, size, size));
+    setTextureRect();
 }
