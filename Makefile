@@ -5,7 +5,7 @@ objdir = obj
 source = src
 build = build
 
-_objects = main.o Entity/Entity.o Components/Input.o Components/Graphics.o
+_objects = main.o Entity/Entity.o Components/Input.o Components/Graphics.o LuaSprite.o
 objects = $(patsubst %, $(objdir)/%, $(_objects))
 #sources = $(patsubst %, $(source)/%, $(_objects))
 #headers := $(wildcard $(include)/*.h)

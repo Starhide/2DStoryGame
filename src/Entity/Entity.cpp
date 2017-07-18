@@ -10,6 +10,6 @@ Entity::~Entity(){
 }
 
 //TODO change to allow multiple of one type
-void Entity::addComponent(std::type_index type, Component* c){
+void Entity::addComponent(std::string type, sol::table* c){
     components[type] = c;
 }

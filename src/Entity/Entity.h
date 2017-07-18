@@ -2,29 +2,21 @@
 
 #include <map>
 #include <string>
-#include <typeindex>
-#include <SFML/Graphics/Transformable.hpp>
+#include <sol.hpp>
 
-class Component;
-
-class Entity : public sf::Transformable{
+class Entity{
     private:
         std::string id;
         std::string type;
-        std::map<std::type_index, Component*> components;
+        std::map<std::string, sol::table*> components;
 
     public:
         ~Entity();
 
-        void addComponent(std::type_index type, Component* c);
+        void addComponent(std::string type, sol::table* c);
 
-        template <typename T>
-        T* get(){
-            auto it = components.find(std::type_index(typeid(T)));
-            if(it != components.end()){
-                return dynamic_cast<T*>(it->second);
-            }
-            return nullptr;
+        sol::table* get(std::string id){
+            return components[id];
         }
 
         void setID(const std::string& id){
