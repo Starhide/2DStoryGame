@@ -1,4 +1,7 @@
-ghost = {
+return {
+    Transform = {
+
+    },
     Graphics = {
         filename = "./images/ghostSheet.png",
         sequences = {
@@ -8,15 +11,7 @@ ghost = {
         scale = 2,
         rate = 0.1,
         startSequence = "angry";
-        startIndex = 0;
+        startIndex = 1;
         isRunning = true;
-    },
-    Input = {
-        key_forward = function()
-            print("Hi")
-        end,
-        key_exit = function()
-            print("Never!!")
-        end
     }
 }

@@ -3,19 +3,20 @@
 #include <map>
 #include <string>
 #include <sol.hpp>
+#include <SFML/Graphics/Transformable.hpp>
 
-class Entity{
+class Entity : sf::Transformable {
     private:
         std::string id;
         std::string type;
-        std::map<std::string, sol::table*> components;
+        std::map<std::string, sol::table> components;
 
     public:
-        ~Entity();
+        ~Entity();        
+ 
+        void addComponent(std::string type, sol::table c);
 
-        void addComponent(std::string type, sol::table* c);
-
-        sol::table* get(std::string id){
+        sol::table& get(std::string id){
             return components[id];
         }
 

@@ -1,9 +1,11 @@
 #pragma once
 
-#include <string>
-#include <tuple>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <iostream>
+#include <string>
+#include <tuple>
 
 class LuaSprite {
   private:
@@ -11,40 +13,40 @@ class LuaSprite {
 
   public:
     LuaSprite(std::string filename);
+    void draw(sf::RenderWindow &win);
+    void loadFromFile(std::string filename);
 
-    float getPosX() { return sprite.getPosition().x; }
+    void setPosition(float x, float y) {
+        sprite.setPosition(x, y);
+    }
 
-    float getPosY() { return sprite.getPosition().y; }
+    std::tuple<float, float> getPosition() {
+        return std::make_tuple(sprite.getPosition().x, sprite.getPosition().y);
+    }
 
-    void setPosX(float x) { sprite.setPosition(x, sprite.getPosition().y); }
+    void setScale(float x, float y) {
+        sprite.setScale(x, y);
+    }
 
-    void setPosY(float y) { sprite.setPosition(sprite.getPosition().x, y); }
+    std::tuple<float, float> getScale() {
+        return std::make_tuple(sprite.getScale().x, sprite.getScale().y);
+    }
 
-    void setPosition(float x, float y) { sprite.setPosition(x, y); }
+    void setOrigin(float x, float y) {
+        sprite.setOrigin(x, y);
+    }
 
-    float getScaleX() { return sprite.getScale().x; }
+    std::tuple<float, float> getOrigin() {
+        return std::make_tuple(sprite.getOrigin().x, sprite.getOrigin().y);
+    }
 
-    float getScaleY() { return sprite.getScale().y; }
+    float getRotation() {
+        return sprite.getRotation();
+    }
 
-    void setScaleX(float x) { sprite.setScale(x, sprite.getScale().y); }
-
-    void setScaleY(float y) { sprite.setScale(sprite.getScale().x, y); }
-
-    void setScale(float x, float y) { sprite.setScale(x, y); }
-
-    float getOriginX() { return sprite.getOrigin().x; }
-
-    float getOriginY() { return sprite.getOrigin().y; }
-
-    void setOriginX(float x) { sprite.setOrigin(x, sprite.getOrigin().y); }
-
-    void setOriginY(float y) { sprite.setOrigin(sprite.getOrigin().x, y); }
-
-    void setOrigin(float x, float y) { sprite.setOrigin(x, y); }
-
-    float getRotation() { return sprite.getRotation(); }
-
-    void setRotation(float r) { sprite.setRotation(r); }
+    void setRotation(float r) {
+        sprite.setRotation(r);
+    }
 
     std::tuple<int, int, int, int> getTextureRect() {
         return std::make_tuple(
@@ -56,9 +58,13 @@ class LuaSprite {
         sprite.setTextureRect(sf::IntRect(left, top, width, height));
     }
 
-    int getTextureWidth() { return sprite.getTexture()->getSize().x; }
+    int getTextureWidth() {
+        return sprite.getTexture()->getSize().x;
+    }
 
-    int getTextureHeight() { return sprite.getTexture()->getSize().y; }
+    int getTextureHeight() {
+        return sprite.getTexture()->getSize().y;
+    }
 
     void setColor(int red, int green, int blue, int alpha) {
         sprite.setColor(sf::Color(red, green, blue, alpha));
@@ -69,7 +75,7 @@ class LuaSprite {
                                sprite.getColor().b, sprite.getColor().a);
     }
 
-    void loadFromFile(std::string filename);
-
-    sf::Sprite getSprite() { return sprite; }
+    sf::Sprite getSprite() {
+        return sprite;
+    }
 };

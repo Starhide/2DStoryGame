@@ -19,14 +19,17 @@ function Graphics:new (t)
    self.__index = self
    self.timer = Clock.new()
    self.sprite = Sprite.new(t["filename"])
-   self.sequences = t["sequences"];
-   self.scale = t["scale"];
+   self.sequences = t["sequences"] or {};
+   self.scale = t["scale"] or 1;
    self.size = math.floor(self.sprite:getTextureWidth() / self.scale);
-   self.rate = t["rate"];
-   self.sequence = t["startSequence"];
-   self.index = t["startIndex"];
-   self.isRunning = t["isRunning"];
-   self:setTextureRect()
+   self.rate = t["rate"] or 0;
+   self.sequence = t["startSequence"] or "null";
+   self.index = t["startIndex"] or 1;
+   self.isRunning = t["isRunning"] or false;
+
+   if self.isRunning then
+    self:setTextureRect()
+   end
    return t
 end
 
@@ -76,16 +79,4 @@ function Graphics:setTextureRect()
     self.sprite:setTextureRect(math.fmod(self.sequences[self.sequence][self.index], self.scale) * self.size, (math.floor(self.sequences[self.sequence][self.index] / self.scale)) * self.size, self.size, self.size)
 end
 
--- Creating an object
-myshape = Graphics:new({
-        filename = "./images/ghostSheet.png",
-        scale = 2,
-        rate = 0.25,
-        startSequence = "idle",
-        startIndex = 1,
-        isRunning = true,
-        sequences = {
-            idle = {0, 1},
-            angry = {2, 3}
-        }
-    })
+return Graphics

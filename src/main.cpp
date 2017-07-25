@@ -9,91 +9,109 @@
 #include <iostream>
 
 #include <sol.hpp>
- 
-#include "TextureController.h" 
-#include "Components/Input.h"
-#include "Components/Graphics.h"
-#include "LuaSprite.h"
+
 #include "Entity/Entity.h"
 #include "Globals.h"
+#include "LuaSprite.h"
+#include "TextureController.h"
+
+#include "Entity/EntityLoader.h"
 
 std::map<std::string, sf::Texture> textures::loadedTextures;
 sf::Time globals::delta;
-std::vector<Input *> globals::inputlisteners;
 
-void draw(LuaSprite& spr, sf::RenderWindow& win){
-    win.draw(spr.getSprite());
-}
-
-void initializeLuaState(sol::state &lua){
-    //User Types
-    lua.new_usertype<sf::Clock>("Clock",
-        sol::constructors<sf::Clock()>(),
+void initializeLuaState(sol::state &lua) {
+    // clang-format off
+    lua.new_usertype<sf::Clock>(
+        "Clock", sol::constructors<sf::Clock()>(),
         "restart", &sf::Clock::restart,
         "getElapsedTime", &sf::Clock::getElapsedTime
-    );
+        );
 
-    lua.new_usertype<sf::Time>("Time",
-        sol::constructors<sf::Time()>(),
+    lua.new_usertype<sf::Time>(
+        "Time", sol::constructors<sf::Time()>(),
         "asSeconds", &sf::Time::asSeconds
+        );
+
+    lua.new_usertype<sf::Vector2f>(
+        "Vector", sol::constructors<sf::Vector2f(), sf::Vector2f(float, float)>(),
+        "x", &sf::Vector2f::x,
+        "y", &sf::Vector2f::x
     );
 
-    lua.new_usertype<LuaSprite>("Sprite",
-        sol::constructors<LuaSprite(std::string)>(),
-        "posX", sol::property(&LuaSprite::getPosX, &LuaSprite::setPosX),
-        "posY", sol::property(&LuaSprite::getPosY, &LuaSprite::setPosY),
-        "scaleX", sol::property(&LuaSprite::getScaleX, &LuaSprite::setScaleX),
-        "scaleY", sol::property(&LuaSprite::getScaleY, &LuaSprite::setScaleY),
-        "originX", sol::property(&LuaSprite::getOriginX, &LuaSprite::setOriginX),
-        "originY", sol::property(&LuaSprite::getOriginY, &LuaSprite::setOriginY),
-        "rotation", sol::property(&LuaSprite::getRotation, &LuaSprite::setRotation),
-        "getTextureRect", &LuaSprite::getTextureRect,
-        "setTextureRect", &LuaSprite::setTextureRect,
-        "getTextureWidth", &LuaSprite::getTextureWidth, 
-        "getTextureHeight", &LuaSprite::getTextureHeight,
-        "getColor", &LuaSprite::getColor,
-        "setColor", &LuaSprite::setColor,
-        "loadFromFile", &LuaSprite::loadFromFile
-    ); 
- 
-    lua.new_usertype<Entity>("Entity",
-        "id", sol::property(&Entity::getID, &Entity::setID),
-        "type", sol::property(&Entity::getType, &Entity::setType),
-        "get", &Entity::get
-    );
+    lua.new_usertype<LuaSprite>(
+        "Sprite", sol::constructors<LuaSprite(std::string)>(), 
+        "getPosition",      &LuaSprite::getPosition,
+        "setPosition",      &LuaSprite::setPosition,
+        "getScale",         &LuaSprite::getScale,
+        "setScale",         &LuaSprite::setScale,
+        "getRotation",      &LuaSprite::getRotation,
+        "setRotation",      &LuaSprite::setRotation,
+        "getTextureRect",   &LuaSprite::getTextureRect, 
+        "setTextureRect",   &LuaSprite::setTextureRect, 
+        "getTextureWidth",  &LuaSprite::getTextureWidth, 
+        "getTextureHeight", &LuaSprite::getTextureHeight, 
+        "getColor",         &LuaSprite::getColor,
+        "setColor",         &LuaSprite::setColor, 
+        "loadFromFile",     &LuaSprite::loadFromFile,
+        "draw",             &LuaSprite::draw
+        );
 
-    //Global Methods
-    lua["Draw"] = draw;
+    lua.new_usertype<Entity>("Entity", 
+        "id",   sol::property(&Entity::getID, &Entity::setID), 
+        "type", sol::property(&Entity::getType, &Entity::setType), 
+        "get",  &Entity::get
+        );
+
+    // Global Methods
+
+    // clang-format on
+}
+
+void loadComponents(sol::state &lua,
+                    std::map<std::string, sol::table> &components) {
+    components["Transform"] = lua.script_file("lua/components/Transform.lua");
+    components["Graphics"] = lua.script_file("lua/components/Graphics.lua");
 }
 
 int main() {
-    //using namespace el;
- 
+    using namespace el;
+
+    //Initilaize window and view
     sf::RenderWindow window(sf::VideoMode(800, 800), "C-Lu");
     sf::View worldView(sf::Vector2f(0, 0), sf::Vector2f(200, 200));
     window.setView(worldView);
 
+    //Initilize Lua
     sol::state lua;
     lua.open_libraries();
     initializeLuaState(lua);
-    
-    lua.script_file("lua/test.lua");
 
-    sol::table timer = lua["myshape"];
+    //Load Components
+    std::map<std::string, sol::table> components;
+    loadComponents(lua, components);
 
-    /*lua.script_file("lua/Test.lua");
+    //Load entity patterns
+    std::map<std::string, sol::table> patterns;
+    patterns["ghost"] = lua.script_file("lua/entities/ghost.lua");
+
+    //Launch main.lua
+
+
+
+    lua.script_file("lua/map.lua");
     sol::table entities = lua["entities"];
-    std::vector<Entity*> enits;
-    Entity* e;
+    std::vector<Entity *> enits;
+    Entity *e;
 
-    for(auto &kvp : entities){
+    for (auto &kvp : entities) {
         sol::table initTable = kvp.second;
-        auto nw = createEntity(lua, initTable);
+        auto nw = loadEntity(components, patterns["ghost"], initTable);
         enits.push_back(nw);
-        if(nw->getID() == "Player1"){
+        if (nw->getID() == "Player1") {
             e = nw;
         }
-    }*/
+    }
 
     sf::Clock deltaClock;
     sf::Clock fixedClock;
@@ -108,30 +126,29 @@ int main() {
 
         globals::delta = deltaClock.restart();
 
-        /*if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-            e->setPosition(e->getPosition().x,
-                           e->getPosition().y -
-                               100 * globals::delta.asSeconds());
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+            e->get("Transform")["move"](e->get("Transform"), 0,
+                                        -100 * globals::delta.asSeconds());
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            e->setPosition(e->getPosition().x,
-                           e->getPosition().y +
-                               100 * globals::delta.asSeconds());
-        }*/
+            e->get("Transform")["move"](e->get("Transform"), 0,
+                                        100 * globals::delta.asSeconds());
+        }
 
         window.clear();
-
-        //e->get<Graphics>()->drawUpdate(e, window);
-        //window.draw(timer["getDrawable"](timer));
-        timer["drawUpdate"](timer, &window);
-        timer["frameUpdate"](timer);
+        e->get("Graphics")["drawUpdate"](e->get("Graphics"), &window);
+        e->get("Graphics")["frameUpdate"](e->get("Graphics"));
+        // window.draw(timer["getDrawable"](timer));
+        // sol::function du = e->get("Graphics")->traverse_get<sol::function,
+        // std::string>("drawUpdate");
+        // du(window);
 
         window.display();
 
-        if(fixedClock.getElapsedTime().asSeconds() > 0.05f){
-            
-            //std::cout << timer["update"](timer) << std::endl;
+        if (fixedClock.getElapsedTime().asSeconds() > 0.05f) {
+
+            // std::cout << timer["update"](timer) << std::endl;
             fixedClock.restart();
         }
     }
