@@ -1,45 +1,34 @@
-Graphics = {
-    inst = nil,
-    timer = nil,
-    sprite = nil,
-    sequences = {},
-    scale = 1,
-    size = 0,
-    rate = 0.0,
-    sequence = "null",
-    index = 0,
-    isRunning = false
-}
+Graphics = {}
+Graphics.__index = Graphics
 
-function Graphics:new (inst, t)
-   t = t or {}
-   setmetatable(t, self)
-   self.__index = self
-   self.inst = inst
-   self.timer = Clock.new()
-   self.sprite = Sprite.new(t["filename"])
-   self.sequences = t["sequences"] or {};
-   self.scale = t["scale"] or 1;
-   self.size = math.floor(self.sprite:getTextureWidth() / self.scale);
-   self.rate = t["rate"] or 0;
-   self.sequence = t["startSequence"] or "null";
-   self.index = t["startIndex"] or 1;
-   self.isRunning = t["isRunning"] or false;
+function Graphics.new (inst, t)
+   local o = {}
+   setmetatable(o, Graphics)
+   o.inst = inst
+   o.timer = Clock.new()
+   o.sprite = Sprite.new(t["filename"])
+   o.sequences = t["sequences"] or {};
+   o.scale = t["scale"] or 1;
+   o.size = math.floor(o.sprite:getTextureWidth() / o.scale);
+   o.rate = t["rate"] or 0;
+   o.sequence = t["startSequence"] or "null";
+   o.index = t["startIndex"] or 1;
+   o.isRunning = t["isRunning"] or false;
 
-   if self.isRunning then
-    self:setTextureRect()
+   if o.isRunning then
+    o:setTextureRect()
    end
-   return t
+   return o
 end
 
-function Graphics:drawUpdate(win)
-    self.sprite:setPosition(self.inst:get("Transform"):getPositionXY())
-    self.sprite:setScale(self.inst:get("Transform"):getScaleXY())
+function Graphics:draw(win)
+    self.sprite:setPosition(self.inst:get("Transform"):getPosition():unpack())
+    self.sprite:setScale(self.inst:get("Transform"):getScale():unpack())
     self.sprite:setRotation(self.inst:get("Transform"):getRotation())
     self.sprite:draw(win)
 end
 
-function Graphics:frameUpdate() 
+function Graphics:update(dt) 
     if (self.isRunning) then
         if (self.timer:getElapsedTime():asSeconds() > self.rate) then
             self.index = self.index + 1

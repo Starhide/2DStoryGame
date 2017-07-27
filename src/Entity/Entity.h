@@ -5,14 +5,14 @@
 #include <sol.hpp>
 #include <SFML/Graphics/Transformable.hpp>
 
-class Entity : sf::Transformable {
+class Entity {
     private:
         std::string id;
         std::string type;
         std::map<std::string, sol::table> components;
+        Entity* parent;
 
-    public:
-        ~Entity();        
+    public:      
  
         void addComponent(std::string type, sol::table c);
 
@@ -34,5 +34,13 @@ class Entity : sf::Transformable {
 
         std::string getType() const{
             return type;
+        }
+
+        void setParent(Entity* e){
+            this->parent = e;
+        }
+
+        Entity* getParent(){
+            return this->parent;
         }
 };

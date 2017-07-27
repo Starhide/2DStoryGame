@@ -15,10 +15,56 @@
 #include "LuaSprite.h"
 #include "TextureController.h"
 
-#include "Entity/EntityLoader.h"
+//#include "Entity/EntityLoader.h"
 
 std::map<std::string, sf::Texture> textures::loadedTextures;
-sf::Time globals::delta;
+std::map<std::string, Entity*> entities;
+std::vector<sol::table*> draws;
+std::vector<sol::table*> updates;
+
+Entity* getEntity(std::string id){
+    return entities[id];
+}
+
+Entity* loadEntity(std::map<std::string, sol::table> &components,
+                   sol::table &pattern, sol::table &init) {
+
+    auto e = new Entity();
+    e->setID(init["id"]);
+
+    if(init["parent"]){
+        e->setParent(getEntity(init["parent"]));
+    } else {
+        e->setParent(nullptr);
+    }
+
+    sol::table t = pattern;
+    sol::table comps = init["components"];
+
+    for (auto &kvp : comps) {
+        for (auto &kvp2 : kvp.second.as<sol::table>()) {
+            t[kvp.first][kvp2.first] = kvp2.second;
+        }
+    }
+
+    std::string key;
+
+    for (auto &kvp : t) {
+        key = kvp.first.as<std::string>();
+        sol::table comp = components[key]["new"](*e, kvp.second);
+        e->addComponent(key, comp);
+        if(comp["draw"]){
+            draws.push_back(&(e->get(key)));
+        }
+        if(comp["update"]){
+            updates.push_back(&(e->get(key)));
+        }
+        
+        std::cout << "Added " << key << " to " << e->getID() << std::endl;
+    }
+
+    return e;
+}
 
 void initializeLuaState(sol::state &lua) {
     // clang-format off
@@ -40,7 +86,7 @@ void initializeLuaState(sol::state &lua) {
     );
 
     lua.new_usertype<LuaSprite>(
-        "Sprite", sol::constructors<LuaSprite(std::string)>(), 
+        "Sprite",           sol::constructors<LuaSprite(std::string)>(), 
         "getPosition",      &LuaSprite::getPosition,
         "setPosition",      &LuaSprite::setPosition,
         "getScale",         &LuaSprite::getScale,
@@ -60,10 +106,13 @@ void initializeLuaState(sol::state &lua) {
     lua.new_usertype<Entity>("Entity", 
         "id",   sol::property(&Entity::getID, &Entity::setID), 
         "type", sol::property(&Entity::getType, &Entity::setType), 
-        "get",  &Entity::get
+        "get",  &Entity::get,
+        "parent", sol::property(&Entity::getParent, &Entity::setParent)
         );
 
     // Global Methods
+
+    lua["isKeyPressed"] = &sf::Keyboard::isKeyPressed;
 
     // clang-format on
 }
@@ -72,10 +121,11 @@ void loadComponents(sol::state &lua,
                     std::map<std::string, sol::table> &components) {
     components["Transform"] = lua.script_file("lua/components/Transform.lua");
     components["Graphics"] = lua.script_file("lua/components/Graphics.lua");
+    components["Input"] = lua.script_file("lua/components/Input.lua");
 }
 
 int main() {
-    using namespace el;
+    //using namespace el;
 
     //Initilaize window and view
     sf::RenderWindow window(sf::VideoMode(800, 800), "C-Lu");
@@ -94,28 +144,29 @@ int main() {
     //Load entity patterns
     std::map<std::string, sol::table> patterns;
     patterns["ghost"] = lua.script_file("lua/entities/ghost.lua");
+    patterns["hat"] = lua.script_file("lua/entities/hat.lua");
 
     //Launch main.lua
 
 
 
     lua.script_file("lua/map.lua");
-    sol::table entities = lua["entities"];
-    std::vector<Entity *> enits;
+    sol::table ents = lua["entities"];
     Entity *e;
 
-    for (auto &kvp : entities) {
+    for (auto &kvp : ents) {
         sol::table initTable = kvp.second;
-        auto nw = loadEntity(components, patterns["ghost"], initTable);
-        enits.push_back(nw);
-        if (nw->getID() == "Player1") {
+        auto nw = loadEntity(components, patterns[initTable["typename"]], initTable);
+        entities[nw->getID()] = nw;
+        if (nw->getID() == "Player1") { 
             e = nw;
         }
     }
 
     sf::Clock deltaClock;
     sf::Clock fixedClock;
-
+    sf::Time delta;
+    
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -124,31 +175,30 @@ int main() {
             }
         }
 
-        globals::delta = deltaClock.restart();
+        delta = deltaClock.restart();
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-            e->get("Transform")["move"](e->get("Transform"), 0,
-                                        -100 * globals::delta.asSeconds());
+        if(sf::Joystick::isConnected(0)){
+            float x = sf::Joystick::getAxisPosition(0, sf::Joystick::X);
+            float y = sf::Joystick::getAxisPosition(0, sf::Joystick::Y);    
+            e->get("Transform")["move"](e->get("Transform"), x * delta.asSeconds(), y * delta.asSeconds());
         }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            e->get("Transform")["move"](e->get("Transform"), 0,
-                                        100 * globals::delta.asSeconds());
+        //Physics
+        for(auto table : updates){
+            (*table)["update"](*table, delta.asSeconds());
         }
 
         window.clear();
-        e->get("Graphics")["drawUpdate"](e->get("Graphics"), &window);
-        e->get("Graphics")["frameUpdate"](e->get("Graphics"));
-        // window.draw(timer["getDrawable"](timer));
-        // sol::function du = e->get("Graphics")->traverse_get<sol::function,
-        // std::string>("drawUpdate");
-        // du(window);
 
+        //Draw everything
+        for(auto table : draws){
+            (*table)["draw"](*table, &window);
+        }
+        
         window.display();
 
         if (fixedClock.getElapsedTime().asSeconds() > 0.05f) {
-
-            // std::cout << timer["update"](timer) << std::endl;
+            //Possibly remove
             fixedClock.restart();
         }
     }

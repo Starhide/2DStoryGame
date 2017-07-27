@@ -63,6 +63,14 @@ function Vector.new(x, y)
   return setmetatable({ x = x or 0, y = y or 0 }, Vector)
 end
 
+function Vector.fromLabeledTable(t)
+  return Vector(t.x or 0, t.y or 0)
+end
+
+function Vector.fromIndexedTable(t)
+  return Vector(t[0] or 0, t[1] or 0)
+end
+
 function Vector.distance(a, b)
   return (b - a):len()
 end
