@@ -24,7 +24,9 @@ end
 function Graphics:draw(win)
     self.sprite:setPosition(self.inst:get("Transform"):getPosition():unpack())
     self.sprite:setScale(self.inst:get("Transform"):getScale():unpack())
+    self.sprite:setOrigin(self.inst:get("Transform"):getOrigin():unpack())
     self.sprite:setRotation(self.inst:get("Transform"):getRotation())
+    --self.sprite:draw(win, self.inst:get("Transform"):getMatrix())
     self.sprite:draw(win)
 end
 

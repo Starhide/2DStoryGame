@@ -3,6 +3,7 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <sol.hpp>
 #include <iostream>
 #include <string>
 #include <tuple>
@@ -14,6 +15,7 @@ class LuaSprite {
   public:
     LuaSprite(std::string filename);
     void draw(sf::RenderWindow &win);
+    void drawWithTransform(sf::RenderWindow &win, sf::Transform &transform);
     void loadFromFile(std::string filename);
 
     void setPosition(float x, float y) {

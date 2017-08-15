@@ -1,6 +1,6 @@
 CC = g++
 includes = include
-args = -I $(includes) -std=c++17 -llua5.3 -ldl -Wall -lsfml-graphics -lsfml-window -lsfml-system
+args = -I $(includes) -std=c++17 -llua5.3 -ldl -Wall -lsfml-graphics -lsfml-window -lsfml-system -lstdc++fs
 objdir = obj
 source = src
 build = build

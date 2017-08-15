@@ -6,24 +6,18 @@ return {
 
     },
     Graphics = {
-        filename = "./images/ghostSheet.png",
+        filename = "./images/Ship.png",
         sequences = {
-            idle = {0, 1},
-            angry = {2, 3}
+            idle = {0, 1, 2, 3, 2, 1}
         },
         scale = 2,
-        rate = 0.1,
+        rate = 0.2,
         startSequence = "idle",
         startIndex = 1,
         isRunning = true
     },
     Input = {
         isListening = true,
-        keyPressed = {
-            s = function(e)
-                print ("Bithc")
-            end
-        },
         keyHeld = {
             w = function (e, dt, keys)
                 e:get("Physics"):setVelocity(0, -50*dt)
