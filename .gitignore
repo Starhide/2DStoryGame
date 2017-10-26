@@ -3,7 +3,6 @@ obj
 .vscode
 lib
 include
-mingw64
 libarys
 GPATH
 GRTAGS

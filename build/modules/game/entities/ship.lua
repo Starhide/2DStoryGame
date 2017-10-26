@@ -1,17 +1,23 @@
-return function (data)
-    ship = {}
-	ship.Transform = Transform.new(ship, {
+return function (data, parent, name)
+    ship = Entity.new({
+		id		= name,
+		prefab	= "Ship",
+		parent 	= parent,
+		tags 	= {}
+	})
+	
+	ship:AddComponent("Transform", {
 		position = data.Transform.position,
 		rotation = data.Transform.rotation,
 		scale	 = data.Transform.scale,
 		origin 	 = {x = 15.5, y = 15.5}
 	})
 	
-	ship.Physics = Physics.new(ship, {
+	ship:AddComponent("Physics", {
 		mass = data.Physics.mass
 	})
 	
-	ship.Graphics = Graphics.new(ship, {
+	ship:AddComponent("Graphics", {
 		filename = "assets/Ship.png",
 		sequences = {
 			idle = {0, 1, 2, 3, 2, 1}
@@ -23,20 +29,20 @@ return function (data)
 		isRunning = true
 	})
 	
-	ship.Input = Input.new(ship, {
+	ship:AddComponent("Input", {
 		isListening = true,
 		keyHeld = {
 			w = function (e, dt, keys)
-				e.Physics:setVelocity(0, -50*dt)
+				e.components.Physics:setVelocity(0, -50*dt)
 			end,
 			a = function (e, dt)
-				e.Physics:setVelocity(-50*dt, 0)
+				e.components.Physics:setVelocity(-50*dt, 0)
 			end,
 			s = function (e, dt)
-				e.Physics:setVelocity(0, 50*dt)
+				e.components.Physics:setVelocity(0, 50*dt)
 			end,
 			d = function (e, dt)
-				e.Physics:setVelocity(50*dt, 0)
+				e.components.Physics:setVelocity(50*dt, 0)
 			end,
 		}
 	})

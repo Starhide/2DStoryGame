@@ -1,19 +1,19 @@
-return function (data, parent)
+return function (data, parent, n)
     thruster = Entity.new({
-		id=data.id,
-		prefab="Thruster",
-		parent = data.parent
-		tags = {}
+		id		= n,
+		prefab	= "Thruster",
+		parent 	= parent,
+		tags 	= {}
 	})
 	
-	thruster.components.Transform = Transform.new(thruster, {
+	thruster:AddComponent("Transform", {
 		position = data.Transform.position,
 		rotation = data.Transform.rotation,
 		scale	 = data.Transform.scale,
 		origin 	 = {x = 7.5, y = 7}
 	})
 	
-	thruster.components.Graphics = Graphics.new(thruster, {
+	thruster:AddComponent("Graphics", {
 		filename = "assets/thruster.png",
         sequences = {
             active = {0, 1},
@@ -26,18 +26,18 @@ return function (data, parent)
         isRunning = true
 	})
 	
-	thruster:AddComponent() = Input.new(thruster, {
+	thruster:AddComponent("Input", {
 		isListening = true,
 		keyReleased = {},
 		keyPressed = {}
 	})
 	
-	thruster.components.Input:addKeyReleased(data.components.Input.key, function (e)
+	thruster.components.Input:addKeyReleased(data.Input.key, function (e)
 		print("Released!")
 		e.components.Graphics:run("stop")
 	end)
 	
-	thruster.components.Input:addKeyPressed(data.components.Input.key, function (e)
+	thruster.components.Input:addKeyPressed(data.Input.key, function (e)
 		print("Pressed!")
 		e.components.Graphics:run("active")
 	end)

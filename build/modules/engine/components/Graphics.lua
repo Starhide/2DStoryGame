@@ -22,11 +22,11 @@ function Graphics.new (inst, t)
 end
 
 function Graphics:draw(win)
-	self.sprite:setPosition(self.inst.Transform:getPosition():unpack())
-	self.sprite:setScale(self.inst.Transform:getScale():unpack())
+	self.sprite:setPosition(self.inst.components.Transform:getPosition():unpack())
+	self.sprite:setScale(self.inst.components.Transform:getScale():unpack())
 	--print(self.inst.Transform:getOrigin().x)
-	self.sprite:setOrigin(self.inst.Transform:getOrigin():unpack())
-	self.sprite:setRotation(self.inst.Transform:getRotation())
+	self.sprite:setOrigin(self.inst.components.Transform:getOrigin():unpack())
+	self.sprite:setRotation(self.inst.components.Transform:getRotation())
     --self.sprite:draw(win, self.inst:get("Transform"):getMatrix())
     win:draw(self.sprite)
 end

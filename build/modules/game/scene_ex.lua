@@ -11,7 +11,7 @@ for v,l in pairs(js) do
 	scene[v] = {}
 	for n,e in pairs(l) do
 		local block = assert(loadfile(e["typefile"]))()
-		local blockInst = block(e["components"], e.parent)
+		local blockInst = block(e["components"], e.parent, n)
 		scene[v][n] = blockInst
 	end
 end

@@ -12,19 +12,19 @@ function Entity.new(init)
     return e
 end
 
-function Entity:AddComponent(name, data)
+function Entity:AddComponent(name, ...)
 	if self.components[name] then
-		print "component " .. name .. " already exists in " .. self.id
+		print("Component " .. name .. " already exists in " .. self.id)
 		return
 	end
 	
-	self.components[name] = CreateComponent(self, data)
+	self.components[name] = Main.Components[name].new(self, ...)
 end
 
 function Entity:AddTag(tag)
 	for i, t in ipairs(tags) do
 		if t == tag then
-			print self.id .. " already has tag " .. tag
+			print(self.id .. " already has tag " .. tag)
 			return
 		end
 	end

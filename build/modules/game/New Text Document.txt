@@ -1,0 +1,127 @@
+{
+	"world": {
+		"ship": {
+			"type": "ship",
+			"typefile": "modules/game/entities/ship.lua",
+			"components": {
+				"Transform": {
+					"position": {
+						"x": 0,
+						"y": 0
+					},
+					"scale": {
+						"x": 1,
+						"y": 1
+					}
+				},
+				"Physics": {
+					"mass": 10
+				}
+			}
+		},
+		"thruster": {
+			"type": "thruster",
+			"typefile": "modules/game/entities/thruster.lua",
+			"parent": "ship",
+			"components": {
+				"Transform": {
+					"position": {
+						"x": 0,
+						"y": 0
+					}
+				},
+				"Input": {
+					"key": "s"
+				}
+			}
+		},
+		"block1": {
+			"type": "block",
+			"typefile": "modules/game/entities/block.lua",
+			"components": {
+				"Transform": {
+					"position": {
+						"x": 30,
+						"y": 30
+					},
+					"rotation": 0,
+					"scale": {
+						"x": 1,
+						"y": 1
+					}
+				}
+			}
+		},
+		"block2": {
+			"type": "block",
+			"typefile": "modules/game/entities/block.lua",
+			"components": {
+				"Transform": {
+					"position": {
+						"x": -30,
+						"y": 30
+					},
+					"rotation": 0,
+					"scale": {
+						"x": 1,
+						"y": 1
+					}
+				}
+			}
+		},
+		"block3": {
+			"type": "block",
+			"typefile": "modules/game/entities/block.lua",
+			"components": {
+				"Transform": {
+					"position": {
+						"x": 30,
+						"y": -30
+					},
+					"rotation": 0,
+					"scale": {
+						"x": 1,
+						"y": 1
+					}
+				}
+			}
+		},
+		"block4": {
+			"type": "block",
+			"typefile": "modules/game/entities/block.lua",
+			"components": {
+				"Transform": {
+					"position": {
+						"x": -30,
+						"y": -30
+					},
+					"rotation": 0,
+					"scale": {
+						"x": 1,
+						"y": 1
+					}
+				}
+			}
+		},
+		"block5": {
+			"type": "block",
+			"typefile": "modules/game/entities/block.lua",
+			"components": {
+				"Transform": {
+					"position": {
+						"x": 100,
+						"y": 100
+					},
+					"rotation": 0,
+					"scale": {
+						"x": 1,
+						"y": 1
+					}
+				}
+			}
+		}
+	},
+	"gui": {
+		
+	}
+}

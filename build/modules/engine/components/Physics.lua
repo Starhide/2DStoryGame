@@ -17,7 +17,7 @@ function Physics.new (entity, init)
 end
 
 function Physics:update(dt) 
-    trans = self.entity.Transform
+    trans = self.entity.components.Transform
     if not (self.velocity == Vector(0,0)) then
         trans:move((self.velocity*dt):unpack())
     end
@@ -34,8 +34,8 @@ function Physics:update(dt)
 end
 
 function Physics:getGlobalVelocity()
-    if self.entity.parent and self.entity.parent.Physics then
-		return self.entity.parent.Physics:getGlobalVelocity() + self.velocity
+    if self.entity.parent and self.entity.parent.components.Physics then
+		return self.entity.parent.components.Physics:getGlobalVelocity() + self.velocity
     end
     return self.velocity
 end
@@ -49,8 +49,8 @@ function Physics:setVelocity(x, y)
 end
 
 function Physics:getGlobalAcceleration()
-    if self.entity.parent and self.entity.parent.Physics then
-        return self.entity.parent.Physics:getGlobalAcceleration() + self.acceleration
+    if self.entity.parent and self.entity.parent.components.Physics then
+        return self.entity.parent.components.Physics:getGlobalAcceleration() + self.acceleration
     end
     return self.acceleration
 end
@@ -64,8 +64,8 @@ function Physics:setAcceleration(x, y)
 end
 
 function Physics:getGlobalAngVel()
-    if self.entity.parent and self.entity.parent.Physics then
-        return self.entity.parent.Physics:getGlobalAngVel() + self.angVelocity
+    if self.entity.parent and self.entity.parent.components.Physics then
+        return self.entity.parent.components.Physics:getGlobalAngVel() + self.angVelocity
     end
     return self.angVelocity
 end
@@ -79,8 +79,8 @@ function Physics:setAngVel(x)
 end
 
 function Physics:getGlobalAngAccel()
-    if self.entity.parent and self.entity.parent.Physics then
-        return self.entity.parent.Physics:getGlobalAngAccel() + self.angAcceleration
+    if self.entity.parent and self.entity.parent.components.Physics then
+        return self.entity.parent.components.Physics:getGlobalAngAccel() + self.angAcceleration
     end
     return self.angAcceleration
 end
